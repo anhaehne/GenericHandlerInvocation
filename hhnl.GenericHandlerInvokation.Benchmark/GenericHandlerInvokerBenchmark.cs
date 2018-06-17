@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Reports;
 using hhnl.GenericHandlerInvocation.Benchmark.TestCandidates;
 using hhnl.GenericHandlerInvocation.Benchmark.TestData;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,15 +14,16 @@ using Microsoft.Extensions.DependencyInjection;
 namespace hhnl.GenericHandlerInvocation.Benchmark
 {
     [MemoryDiagnoser]
-    [RankColumn]
+    [Config(typeof(Config))]
     public class GenericHandlerInvokerBenchmark
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly object[] _typesToLookup = {"", 1, 1d, 1f, 1L};
         private readonly IGenericHandlerInvoker _cachedCompileExpression;
         private readonly IGenericHandlerInvoker _cachedReflect;
         private readonly IGenericHandlerInvoker _compileExpression;
         private readonly IGenericHandlerInvoker _naiveReflect;
+
+        private readonly IServiceProvider _serviceProvider;
+        private readonly object[] _typesToLookup = {"", 1, 1d, 1f, 1L};
 
         public GenericHandlerInvokerBenchmark()
         {
@@ -64,6 +70,22 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
             foreach (var type in _typesToLookup)
                 invoker.InvokeHandler<Task>(_serviceProvider, typeof(ITestHandler<>), type.GetType(), "HandleAsync",
                     new[] {type});
+        }
+
+        private class Config : ManualConfig
+        {
+            public Config()
+            {
+                Set(new FastestToSlowestOrderProvider());
+            }
+
+            private class FastestToSlowestOrderProvider : DefaultOrderProvider
+            {
+                public override IEnumerable<BenchmarkDotNet.Running.Benchmark> GetSummaryOrder(BenchmarkDotNet.Running.Benchmark[] benchmarks, Summary summary)
+                {
+                    return benchmarks.OrderBy(x => summary[x].ResultStatistics.Median);
+                }
+            }
         }
     }
 }
