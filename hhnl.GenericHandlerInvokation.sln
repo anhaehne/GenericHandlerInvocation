@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2000
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hhnl.GenericHandlerInvocation.Benchmark", "hhnl.GenericHandlerInvokation.Benchmark\hhnl.GenericHandlerInvocation.Benchmark.csproj", "{CCC5A12D-9658-4AB5-9BAC-DB6D3D3304CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hhnl.GenericHandlerInvocation.Benchmark.Tests", "hhnl.GenericHandlerInvocation.Benchmark.Tests\hhnl.GenericHandlerInvocation.Benchmark.Tests.csproj", "{B532CC5E-2053-4CBB-AA0B-A823257EAC72}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCC5A12D-9658-4AB5-9BAC-DB6D3D3304CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCC5A12D-9658-4AB5-9BAC-DB6D3D3304CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCC5A12D-9658-4AB5-9BAC-DB6D3D3304CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCC5A12D-9658-4AB5-9BAC-DB6D3D3304CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B532CC5E-2053-4CBB-AA0B-A823257EAC72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B532CC5E-2053-4CBB-AA0B-A823257EAC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B532CC5E-2053-4CBB-AA0B-A823257EAC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B532CC5E-2053-4CBB-AA0B-A823257EAC72}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F7BEA63-EEE4-422D-89C8-78E9948FD5BA}
+	EndGlobalSection
+EndGlobal
