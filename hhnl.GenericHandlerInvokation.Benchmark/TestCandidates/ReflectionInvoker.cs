@@ -2,7 +2,7 @@
 
 namespace hhnl.GenericHandlerInvocation.Benchmark.TestCandidates
 {
-    public class NaiveReflectionInvoker : IGenericHandlerInvoker
+    public class ReflectionInvoker : IGenericHandlerInvoker
     {
         public TReturnType InvokeHandler<TReturnType>(IServiceProvider serviceProvider, Type genericHandlerType,
             Type genericParameterType,

@@ -8,12 +8,12 @@ using Moq;
 namespace hhnl.GenericHandlerInvocation.Benchmark.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class GenericHandlerInvokerTests
     {
         [TestMethod]
-        public void NaiveReflection()
+        public void Reflection()
         {
-            TestInvoker(new NaiveReflectionInvoker());
+            TestInvoker(new ReflectionInvoker());
         }
 
         [TestMethod]
@@ -24,9 +24,14 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.Tests
 
         [TestMethod]
         public void CompiledExpression()
-
         {
             TestInvoker(new CompiledExpressionInvoker());
+        }
+
+        [TestMethod]
+        public void CachedCompiledExpression()
+        {
+            TestInvoker(new CachedCompiledExpressionInvoker());
         }
 
         public void TestInvoker(IGenericHandlerInvoker invoker)
@@ -35,15 +40,13 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.Tests
             serviceMock.Setup(x => x.HandleAsync(true)).Returns(Task.CompletedTask);
 
             var services = new ServiceCollection();
-            services.AddSingleton<ITestHandler<bool>>(serviceMock.Object);
+            services.AddSingleton(serviceMock.Object);
             var serviceProvider = services.BuildServiceProvider(false);
 
-            for (int i = 0; i < 1000; i++)
-            {
+            for (var i = 0; i < 1000; i++)
                 invoker.InvokeHandler<Task>(serviceProvider, typeof(ITestHandler<>), typeof(bool), "HandleAsync",
                     new object[] {true});
-            }
-            
+
 
             serviceMock.Verify();
         }

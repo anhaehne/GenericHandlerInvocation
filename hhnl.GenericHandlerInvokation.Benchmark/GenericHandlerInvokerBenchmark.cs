@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
-using BenchmarkDotNet.Attributes.Jobs;
-using BenchmarkDotNet.Engines;
 using hhnl.GenericHandlerInvocation.Benchmark.TestCandidates;
 using hhnl.GenericHandlerInvocation.Benchmark.TestData;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +12,12 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
     [RankColumn]
     public class GenericHandlerInvokerBenchmark
     {
-        private readonly object[] _typesToLookup = {"", 1, 1d, 1f, 1L};
-        private IGenericHandlerInvoker _cachedReflect;
-        private IGenericHandlerInvoker _compileExpression;
-        private IGenericHandlerInvoker _naiveReflect;
         private readonly IServiceProvider _serviceProvider;
+        private readonly object[] _typesToLookup = {"", 1, 1d, 1f, 1L};
+        private readonly IGenericHandlerInvoker _cachedCompileExpression;
+        private readonly IGenericHandlerInvoker _cachedReflect;
+        private readonly IGenericHandlerInvoker _compileExpression;
+        private readonly IGenericHandlerInvoker _naiveReflect;
 
         public GenericHandlerInvokerBenchmark()
         {
@@ -29,16 +28,11 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
             services.AddScoped<ITestHandler<float>, TestHandler4>();
             services.AddScoped<ITestHandler<long>, TestHandler5>();
             _serviceProvider = services.BuildServiceProvider(false);
-        }
 
-        [Params(1, 100)] public int Iterations { get; set; }
-
-        [IterationSetup]
-        public void IterationSetup()
-        {
             _cachedReflect = new CachedReflectionInvoker();
             _compileExpression = new CompiledExpressionInvoker();
-            _naiveReflect = new NaiveReflectionInvoker();
+            _naiveReflect = new ReflectionInvoker();
+            _cachedCompileExpression = new CachedCompiledExpressionInvoker();
         }
 
         [Benchmark(Baseline = true)]
@@ -59,12 +53,17 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
             TestTypes(_compileExpression);
         }
 
+        [Benchmark]
+        public void CachedCompiledExpression()
+        {
+            TestTypes(_cachedCompileExpression);
+        }
+
         private void TestTypes(IGenericHandlerInvoker invoker)
         {
-            for (var i = 0; i < Iterations; i++)
-                foreach (var type in _typesToLookup)
-                    invoker.InvokeHandler<Task>(_serviceProvider, typeof(ITestHandler<>), type.GetType(), "HandleAsync",
-                        new[] {type});
+            foreach (var type in _typesToLookup)
+                invoker.InvokeHandler<Task>(_serviceProvider, typeof(ITestHandler<>), type.GetType(), "HandleAsync",
+                    new[] {type});
         }
     }
 }
