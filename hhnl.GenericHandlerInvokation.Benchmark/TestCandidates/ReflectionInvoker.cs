@@ -4,13 +4,21 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.TestCandidates
 {
     public class ReflectionInvoker : IGenericHandlerInvoker
     {
-        public TReturnType InvokeHandler<TReturnType>(IServiceProvider serviceProvider, Type genericHandlerType,
-            Type genericParameterType,
-            string methodToInvoke, object[] args)
+        private readonly Type _genericHandlerType;
+        private readonly string _methodToInvoke;
+
+        public ReflectionInvoker(Type genericHandlerType, string methodToInvoke)
         {
-            var genericInterface = genericHandlerType.MakeGenericType(genericParameterType);
+            _genericHandlerType = genericHandlerType;
+            _methodToInvoke = methodToInvoke;
+        }
+
+        public TReturnType InvokeHandler<TReturnType>(IServiceProvider serviceProvider,
+            Type genericParameterType, object[] args)
+        {
+            var genericInterface = _genericHandlerType.MakeGenericType(genericParameterType);
             var service = serviceProvider.GetService(genericInterface);
-            return (TReturnType) genericInterface.GetMethod(methodToInvoke).Invoke(service, args);
+            return (TReturnType) genericInterface.GetMethod(_methodToInvoke).Invoke(service, args);
         }
     }
 }

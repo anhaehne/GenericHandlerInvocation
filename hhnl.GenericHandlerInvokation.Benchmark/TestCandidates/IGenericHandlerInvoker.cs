@@ -7,8 +7,7 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.TestCandidates
 {
     public interface IGenericHandlerInvoker
     {
-        TReturnType InvokeHandler<TReturnType>(IServiceProvider serviceProvider, Type genericHandlerType,
-            Type genericParameterType,
-            string methodToInvoke, object[] args);
+        TReturnType InvokeHandler<TReturnType>(IServiceProvider serviceProvider,
+            Type genericParameterType, object[] args);
     }
 }

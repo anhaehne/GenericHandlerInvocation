@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Reports;
 using hhnl.GenericHandlerInvocation.Benchmark.TestCandidates;
@@ -15,6 +16,7 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
 {
     [MemoryDiagnoser]
     [Config(typeof(Config))]
+    [MaxColumn]
     public class GenericHandlerInvokerBenchmark
     {
         private readonly IGenericHandlerInvoker _cachedCompileExpression;
@@ -35,10 +37,10 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
             services.AddScoped<ITestHandler<long>, TestHandler5>();
             _serviceProvider = services.BuildServiceProvider(false);
 
-            _cachedReflect = new CachedReflectionInvoker();
-            _compileExpression = new CompiledExpressionInvoker();
-            _naiveReflect = new ReflectionInvoker();
-            _cachedCompileExpression = new CachedCompiledExpressionInvoker();
+            _cachedReflect = new CachedReflectionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
+            _compileExpression = new CompiledExpressionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
+            _naiveReflect = new ReflectionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
+            _cachedCompileExpression = new CachedCompiledExpressionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
         }
 
         [Benchmark(Baseline = true)]
@@ -68,8 +70,7 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
         private void TestTypes(IGenericHandlerInvoker invoker)
         {
             foreach (var type in _typesToLookup)
-                invoker.InvokeHandler<Task>(_serviceProvider, typeof(ITestHandler<>), type.GetType(), "HandleAsync",
-                    new[] {type});
+                invoker.InvokeHandler<Task>(_serviceProvider, type.GetType(), new[] {type});
         }
 
         private class Config : ManualConfig

@@ -9,20 +9,29 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.TestCandidates
 {
     public class CachedCompiledExpressionInvoker : IGenericHandlerInvoker
     {
+        private readonly Type _genericHandlerType;
+        private readonly string _methodToInvoke;
+
+        public CachedCompiledExpressionInvoker(Type genericHandlerType, string methodToInvoke)
+        {
+            _genericHandlerType = genericHandlerType;
+            _methodToInvoke = methodToInvoke;
+        }
+
         private readonly ConcurrentDictionary<Type, Func<IServiceProvider, object[], object>> _handlerLookup =
             new ConcurrentDictionary<Type, Func<IServiceProvider, object[], object>>();
 
-        public TReturnType InvokeHandler<TReturnType>(IServiceProvider serviceProvider, Type genericHandlerType,
-            Type genericParameterType, string methodToInvoke, object[] args)
+        public TReturnType InvokeHandler<TReturnType>(IServiceProvider serviceProvider,
+            Type genericParameterType, object[] args)
         {
             if (!_handlerLookup.ContainsKey(genericParameterType))
             {
-                var explicitHandlerType = genericHandlerType.MakeGenericType(genericParameterType);
+                var explicitHandlerType = _genericHandlerType.MakeGenericType(genericParameterType);
                 var serviceProviderParameter = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
                 var argumentsParameter = Expression.Parameter(typeof(object[]), "args");
 
                 var getHandlerCall = Expression.Call(null,
-                    typeof(ServiceProviderServiceExtensions).GetMethod("GetService")
+                    typeof(ServiceProviderServiceExtensions).GetMethod(nameof(IServiceProvider.GetService))
                         .MakeGenericMethod(explicitHandlerType),
                     serviceProviderParameter);
 
@@ -35,7 +44,7 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.TestCandidates
                 }
 
                 Expression serviceCallExpression = Expression.Call(getHandlerCall,
-                    explicitHandlerType.GetMethod(methodToInvoke),
+                    explicitHandlerType.GetMethod(_methodToInvoke),
                     argumentExpressions);
 
                 var compiled = Expression.Lambda<Func<IServiceProvider, object[], object>>(serviceCallExpression,
