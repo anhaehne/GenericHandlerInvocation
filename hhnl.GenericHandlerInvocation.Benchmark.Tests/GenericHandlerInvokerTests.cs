@@ -13,25 +13,31 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.Tests
         [TestMethod]
         public void Reflection()
         {
-            TestInvoker(new ReflectionInvoker());
+            TestInvoker(new ReflectionInvoker(typeof(ITestHandler<>), "HandleAsync"));
         }
 
         [TestMethod]
         public void CachedReflection()
         {
-            TestInvoker(new CachedReflectionInvoker());
+            TestInvoker(new CachedReflectionInvoker(typeof(ITestHandler<>), "HandleAsync"));
         }
 
         [TestMethod]
         public void CompiledExpression()
         {
-            TestInvoker(new CompiledExpressionInvoker());
+            TestInvoker(new CompiledExpressionInvoker(typeof(ITestHandler<>), "HandleAsync"));
         }
 
         [TestMethod]
         public void CachedCompiledExpression()
         {
-            TestInvoker(new CachedCompiledExpressionInvoker());
+            TestInvoker(new CachedCompiledExpressionInvoker(typeof(ITestHandler<>), "HandleAsync"));
+        }
+
+        [TestMethod]
+        public void ProdReadyCachedCompiledExpression()
+        {
+            TestInvoker(new ProductionReadyCachedCompiledExpressionInvoker(typeof(ITestHandler<>), "HandleAsync"));
         }
 
         public void TestInvoker(IGenericHandlerInvoker invoker)
@@ -44,7 +50,7 @@ namespace hhnl.GenericHandlerInvocation.Benchmark.Tests
             var serviceProvider = services.BuildServiceProvider(false);
 
             for (var i = 0; i < 1000; i++)
-                invoker.InvokeHandler<Task>(serviceProvider, typeof(ITestHandler<>), typeof(bool), "HandleAsync",
+                invoker.InvokeHandler<Task>(serviceProvider, typeof(bool),
                     new object[] {true});
 
 

@@ -19,6 +19,7 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
     [MaxColumn]
     public class GenericHandlerInvokerBenchmark
     {
+        private readonly IGenericHandlerInvoker _prodCachedCompileExpression;
         private readonly IGenericHandlerInvoker _cachedCompileExpression;
         private readonly IGenericHandlerInvoker _cachedReflect;
         private readonly IGenericHandlerInvoker _compileExpression;
@@ -41,6 +42,7 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
             _compileExpression = new CompiledExpressionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
             _naiveReflect = new ReflectionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
             _cachedCompileExpression = new CachedCompiledExpressionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
+            _prodCachedCompileExpression = new ProductionReadyCachedCompiledExpressionInvoker(typeof(ITestHandler<>), nameof(ITestHandler<object>.HandleAsync));
         }
 
         [Benchmark(Baseline = true)]
@@ -65,6 +67,12 @@ namespace hhnl.GenericHandlerInvocation.Benchmark
         public void CachedCompiledExpression()
         {
             TestTypes(_cachedCompileExpression);
+        }
+
+        [Benchmark]
+        public void ProdReadyCachedCompiledExpression()
+        {
+            TestTypes(_prodCachedCompileExpression);
         }
 
         private void TestTypes(IGenericHandlerInvoker invoker)
