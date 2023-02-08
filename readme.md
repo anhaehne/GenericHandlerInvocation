@@ -1,3 +1,21 @@
+# Results - SDK 7.0.102
+
+``` ini
+BenchmarkDotNet=v0.13.4, OS=Windows 11 (10.0.22621.1105)
+Intel Core i5-8500 CPU 3.00GHz (Coffee Lake), 1 CPU, 6 logical and 6 physical cores
+.NET SDK=7.0.102
+  [Host]     : .NET 7.0.2 (7.0.222.60605), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.2 (7.0.222.60605), X64 RyuJIT AVX2
+```
+|                            Method |         Mean |       Error |      StdDev |          Max |    Ratio | RatioSD |   Gen0 |   Gen1 | Allocated | Alloc Ratio |
+|---------------------------------- |-------------:|------------:|------------:|-------------:|---------:|--------:|-------:|-------:|----------:|------------:|
+|                    SwitchBaseline |     394.1 ns |     2.83 ns |     2.64 ns |     399.7 ns |     1.00 |    0.00 | 0.0339 |      - |     160 B |        1.00 |
+| ProdReadyCachedCompiledExpression |     395.6 ns |     2.69 ns |     2.51 ns |     400.9 ns |     1.00 |    0.01 | 0.0339 |      - |     160 B |        1.00 |
+|          CachedCompiledExpression |     457.0 ns |     6.74 ns |     6.31 ns |     466.4 ns |     1.16 |    0.02 | 0.0339 |      - |     160 B |        1.00 |
+|                  CachedReflection |     615.4 ns |     5.91 ns |     5.24 ns |     624.0 ns |     1.56 |    0.02 | 0.1011 |      - |     480 B |        3.00 |
+|                   NaiveReflection |   1,622.2 ns |    11.78 ns |    11.02 ns |   1,644.2 ns |     4.12 |    0.05 | 0.1011 |      - |     480 B |        3.00 |
+|                CompiledExpression | 908,854.8 ns | 9,254.97 ns | 8,657.10 ns | 918,399.4 ns | 2,306.25 |   25.39 | 5.8594 | 4.8828 |   29358 B |      183.49 |
+
 # Results - SDK 2.1.401
 
 ``` ini
